@@ -1,0 +1,9 @@
+{
+  "REPORT_CREATED": "Laporan berhasil dibuat.",
+  "REPORT_FETCH_SUCCESS": "Laporan berhasil diambil.",
+  "REPORT_NOT_FOUND": "Laporan tidak ditemukan.",
+  "IMAGE_INVALID": "Gambar yang diupload tidak diperbolehkan.",
+  "CLAIM_SUBMITTED": "Klaim kamu sudah dikirim.",
+  "CLAIM_APPROVED": "Klaim disetujui.",
+  "CLAIM_REJECTED": "Klaim ditolak."
+}

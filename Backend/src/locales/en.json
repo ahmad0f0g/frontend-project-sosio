@@ -1,0 +1,9 @@
+{
+  "REPORT_CREATED": "Report has been successfully created.",
+  "REPORT_FETCH_SUCCESS": "Report retrieved successfully.",
+  "REPORT_NOT_FOUND": "Report not found.",
+  "IMAGE_INVALID": "The uploaded image is not allowed.",
+  "CLAIM_SUBMITTED": "Your claim has been submitted.",
+  "CLAIM_APPROVED": "Claim approved.",
+  "CLAIM_REJECTED": "Claim rejected."
+}
