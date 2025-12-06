@@ -190,43 +190,33 @@ async function fetchAndRenderListing() {
 
 async function handleReportSubmit(e) {
     e.preventDefault();
-    
-    // Tentukan suffix ID input (sekarang selalu '-found')
     const typeSuffix = '-found'; 
 
-    // Ambil nilai dasar
+    // Ambil data dasar
     const title = document.getElementById('input-title').value.trim();
-    // Gunakan suffix untuk mengambil input yang benar
     const category = document.getElementById('input-category' + typeSuffix).value;
     const date = document.getElementById('input-date' + typeSuffix).value;
     const location = document.getElementById('input-location' + typeSuffix).value.trim();
     const desc = document.getElementById('input-desc' + typeSuffix).value.trim();
     const phone = document.getElementById('input-phone' + typeSuffix).value.trim();
-    const reporter = document.getElementById('input-reporter').value.trim(); // Ini akan menjadi 'finder'
-
+    const reporter = document.getElementById('input-reporter').value.trim();
     const imageInput = document.getElementById('input-image');
     const file = imageInput && imageInput.files && imageInput.files[0] ? imageInput.files[0] : null;
 
-    // Tambahan untuk laporan 'found' (5 Ciri Rahasia)
+    // --- PERBAIKAN DI SINI (Hanya ambil 3 Secret) ---
     const secret1 = document.getElementById('input-secret-1').value.trim();
     const secret2 = document.getElementById('input-secret-2').value.trim();
     const secret3 = document.getElementById('input-secret-3').value.trim();
-    const secret4 = document.getElementById('input-secret-4').value.trim();
-    const secret5 = document.getElementById('input-secret-5').value.trim();
         
-    // Validasi khusus untuk 2 ciri rahasia wajib
     if (!secret1 || !secret2) {
         alert('Mohon isi Ciri Rahasia 1 dan 2 untuk verifikasi klaim.');
         return;
     }
-
-    // Simple validation wajib
     if (!title || !location || !date || !phone || !reporter) {
-        alert('Mohon isi semua field wajib (Nama Barang, Lokasi, Tanggal, dan Kontak Anda).');
+        alert('Mohon isi semua field wajib.');
         return;
     }
 
-    // Prepare FormData
     const formData = new FormData();
     formData.append('title', title);
     formData.append('category', category);
@@ -235,56 +225,36 @@ async function handleReportSubmit(e) {
     formData.append('phone', phone);
     formData.append('reporter', reporter);
     formData.append('description', desc);
-    formData.append('type', 'found'); // SELALU 'found'
+    formData.append('type', 'found');
 
-    // Tambahkan 5 ciri rahasia
+    // Append 3 Secret saja
     formData.append('secret1', secret1);
     formData.append('secret2', secret2);
     formData.append('secret3', secret3);
-    formData.append('secret4', secret4);
-    formData.append('secret5', secret5);
 
-    if (file) {
-        formData.append('images', file); // name 'images' to match backend middleware
-    }
+    if (file) { formData.append('images', file); }
 
+    // ... (Sisa kode fetch sama seperti sebelumnya) ...
     try {
         const res = await fetch(`${API_BASE}/reports`, {
             method: 'POST',
-            headers: {
-                // NOTE: do NOT set Content-Type when sending FormData; browser sets boundary
-                'Accept-Language': defaultLang
-            },
+            headers: { 'Accept-Language': defaultLang },
             body: formData
         });
-
+        // ... (lanjutan handling response)
         if (res.ok) {
-            const json = await res.json();
-            alert(json.message || 'Laporan berhasil dibuat.');
-            document.querySelector('#report form').reset();
-            // go to appropriate page
-            navTo('found'); // Selalu ke 'found'
-            // refresh listing
-            fetchAndRenderListing();
+             const json = await res.json();
+             alert(json.message || 'Laporan berhasil dibuat.');
+             document.querySelector('#report form').reset();
+             navTo('found');
+             fetchAndRenderListing();
         } else {
-            const err = await res.json().catch(()=>({ message: 'Unknown error' }));
-            alert('Gagal mengirim laporan: ' + (err.message || res.statusText));
+             const err = await res.json().catch(()=>({ message: 'Unknown error' }));
+             alert('Gagal mengirim laporan: ' + (err.message || res.statusText));
         }
     } catch (err) {
-        console.error('submit report error', err);
-        alert('Gagal mengirim laporan (network). Data disimpan sementara di local demo.');
-        // fallback: keep in local array
-        const fallbackItem = {
-            id: Date.now(),
-            type: 'found', // Selalu 'found'
-            title, category, date, location, img: file ? URL.createObjectURL(file) : 'https://placehold.co/400x300/e2e8f0/808080?text=No+Image',
-            status: 'unclaimed',
-            desc, finder: 'Anda (User)'
-        };
-        itemsData.unshift(fallbackItem);
-        document.querySelector('#report form').reset();
-        navTo('found'); // Selalu ke 'found'
-        renderCards(itemsData, 'listing-grid');
+        console.error('Error', err);
+        alert('Gagal mengirim laporan (network).');
     }
 }
 
@@ -312,16 +282,19 @@ window.onclick = function(event) {
 async function handleClaimSubmit(e) {
     e.preventDefault();
 
-    // 1. Ambil nilai dari input berdasarkan ID yang baru kita buat
     const nameInput = document.getElementById('claim-name');
-    const proofInput = document.getElementById('claim-proof');
+    // --- PERBAIKAN: Ambil ID yang benar dari HTML Modal ---
+    const ans1Input = document.getElementById('claim-secret-1');
+    const ans2Input = document.getElementById('claim-secret-2');
+    const ans3Input = document.getElementById('claim-secret-3');
 
     const name = nameInput ? nameInput.value.trim() : '';
-    const proof = proofInput ? proofInput.value.trim() : '';
+    const ans1 = ans1Input ? ans1Input.value.trim() : '';
+    const ans2 = ans2Input ? ans2Input.value.trim() : '';
+    const ans3 = ans3Input ? ans3Input.value.trim() : '';
 
-    // 2. Validasi: Pastikan semua data terisi
-    if (!name || !proof) {
-        alert('Mohon isi nama dan bukti kepemilikan.');
+    if (!name || !ans1 || !ans2) {
+        alert('Mohon isi nama dan minimal 2 jawaban ciri rahasia.');
         return;
     }
 
@@ -331,25 +304,29 @@ async function handleClaimSubmit(e) {
     }
 
     try {
-        // 3. Kirim data ke Backend
         const res = await fetch(`${API_BASE}/claims`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 ...defaultHeaders
             },
+            // --- PERBAIKAN: Kirim sebagai object 'answers' ---
             body: JSON.stringify({
                 reportId: currentClaimingId,
                 name: name,
-                reason: proof
+                reason: "Verifikasi Ciri Rahasia", // Default reason
+                answers: {
+                    secret1: ans1,
+                    secret2: ans2,
+                    secret3: ans3
+                }
             })
         });
 
         if (res.ok) {
             const json = await res.json();
-            alert(json.message || 'Klaim berhasil dikirim. Penemu akan segera dihubungi.');
+            alert(json.message || 'Klaim berhasil dikirim.');
             closeModal();
-            // Refresh halaman agar update terlihat
             fetchAndRenderListing();
         } else {
             const err = await res.json().catch(()=>({message: res.statusText}));
@@ -357,9 +334,10 @@ async function handleClaimSubmit(e) {
         }
     } catch (err) {
         console.error('claim submit error', err);
-        alert('Gagal kirim klaim (network). Silakan coba lagi.');
+        alert('Gagal kirim klaim (network).');
     }
 }
+
 
 /* ----------------------
    HELPERS
