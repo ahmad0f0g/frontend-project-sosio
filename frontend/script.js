@@ -207,6 +207,8 @@ async function handleReportSubmit(e) {
     const secret1 = document.getElementById('input-secret-1').value.trim();
     const secret2 = document.getElementById('input-secret-2').value.trim();
     const secret3 = document.getElementById('input-secret-3').value.trim();
+   
+   
         
     if (!secret1 || !secret2) {
         alert('Mohon isi Ciri Rahasia 1 dan 2 untuk verifikasi klaim.');
@@ -227,7 +229,6 @@ async function handleReportSubmit(e) {
     formData.append('description', desc);
     formData.append('type', 'found');
 
-    // Append 3 Secret saja
     formData.append('secret1', secret1);
     formData.append('secret2', secret2);
     formData.append('secret3', secret3);

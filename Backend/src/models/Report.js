@@ -14,6 +14,15 @@ const reportSchema = new mongoose.Schema(
     images: [{ url: String, public_id: String }],
     status: { type: String, default: "available" },
     claimCount: { type: Number, default: 0 },
+
+    secrets: {
+      question1: { type: String },
+      answer1: { type: String }, // Jawaban benar dari penemu
+      question2: { type: String },
+      answer2: { type: String },
+      question3: { type: String },
+      answer3: { type: String }
+    }
   },
   { timestamps: true }
 );

@@ -10,6 +10,12 @@ const claimSchema = new mongoose.Schema(
 
     reason: { type: String, required: true },
     status: { type: String, default: "pending" },
+
+    answers: {
+      answer1: { type: String }, // Jawaban tebakan dari pengklaim
+      answer2: { type: String },
+      answer3: { type: String }
+    }
   },
   { timestamps: true }
 );
