@@ -15,6 +15,16 @@ const reportSchema = new mongoose.Schema(
     status: { type: String, default: "available" },
     claimCount: { type: Number, default: 0 },
 
+    dateFound: { 
+        type: Date, 
+        required: true 
+    },
+    
+    finderName: { 
+        type: String, 
+        required: true 
+    },
+
     secrets: {
       question1: { type: String },
       answer1: { type: String }, // Jawaban benar dari penemu

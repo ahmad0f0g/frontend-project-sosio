@@ -19,7 +19,7 @@ const uploadToCloudinary = (buffer) => {
 export const createReport = async (req, res) => {
   try {
     // 1. Ambil data 'type' juga (lost/found)
-    const { title, description, category, location, type, phone, secret1, secret2, secret3 } = req.body;
+    const { title, description, category, location, type, phone, reporter, date, secret1, secret2, secret3 } = req.body;
 
     let uploadedImages = [];
 
@@ -42,7 +42,9 @@ export const createReport = async (req, res) => {
       type: type || 'lost', // Default ke 'lost' jika kosong
       phone, 
       images: uploadedImages,
-
+      finderName: reporter, 
+      dateFound: date,
+      
       secrets: {
         answer1: secret1,
         answer2: secret2,

@@ -5,19 +5,28 @@ const detectSensitiveDocument = async (buffer) => {
     const image = sharp(buffer);
     const metadata = await image.metadata();
 
-    // 1. Cek rasio mendekati ID Card (85.6mm × 53.98mm → ~1.586)
+    // 1. Cek Geometri (Rasio)
     const ratio = metadata.width / metadata.height;
-    if (ratio > 1.55 && ratio < 1.62) return true;
+    // Range rasio kartu ID (agak longgar sedikit biar aman)
+    const isIdCardRatio = ratio > 1.50 && ratio < 1.65;
 
-    // 2. Analisis warna dominan (KTP Indonesia dominan biru)
+    // 2. Cek Warna Dominan
     const { dominant } = await image.stats();
+    
+    // Logika warna: Elemen Biru (b) harus lebih tinggi dari Merah (r) dan Hijau (g)
+    // Dan tingkat kecerahan birunya harus cukup tinggi (>100)
+    const isBlueDominant = 
+      dominant.b > dominant.r && 
+      dominant.b > dominant.g && 
+      dominant.b > 100;
 
-    const isMostlyBlue =
-      dominant.r < 80 && dominant.g < 120 && dominant.b > 130;
+    // KEPUTUSAN FINAL: Harus memenuhi KEDUANYA
+    if (isIdCardRatio && isBlueDominant) {
+        console.log("[Security] Blocked: Shape matches ID Card AND Color is Blue.");
+        return true; // Terdeteksi sebagai dokumen sensitif
+    }
 
-    if (isMostlyBlue) return true;
-
-    return false;
+    return false; // Aman (Mungkin dompet coklat, atau buku merah)
   } catch (error) {
     console.error("Document detection error:", error);
     return false;

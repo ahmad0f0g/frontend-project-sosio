@@ -130,6 +130,11 @@ function setCategory(cat, element) {
     fetchAndRenderListing();
 }
 
+function toggleMobileMenu() {
+    const nav = document.querySelector('.nav-links');
+    nav.classList.toggle('active');
+}
+
 function filterItems() {
     fetchAndRenderListing();
 }
@@ -394,6 +399,7 @@ window.closeModal = closeModal;
 window.handleClaimSubmit = handleClaimSubmit;
 window.setCategory = setCategory;
 window.filterItems = filterItems;
+window.toggleMobileMenu = toggleMobileMenu;
 
 // Pastikan fungsi yang dihapus tidak lagi terikat ke window
 // window.showContactInfo = showContactInfo; // Dihapus
