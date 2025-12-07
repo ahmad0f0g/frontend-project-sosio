@@ -104,7 +104,35 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
     .hero h1 { font-size: 2rem; }
-    .nav-links { display: none; }
+    .nav-links { 
+        display: none; 
+        /* Mulai penyesuaian Mobile Menu Overlay */
+        position: absolute; /* Atur posisi relatif terhadap viewport/header */
+        top: 60px; /* Jarak dari atas (asumsi tinggi header sekitar 60px) */
+        left: 0;
+        right: 0;
+        background: var(--white);
+        box-shadow: var(--shadow-lg);
+        flex-direction: column; /* Ubah item menjadi vertikal */
+        padding: 0;
+    }
+    .nav-links.active {
+        display: flex; /* Tampilkan menu saat kelas .active ditambahkan oleh JS */
+    }
+    .nav-links li {
+        width: 100%;
+        border-top: 1px solid #f1f5f9; /* Garis pemisah antar menu */
+    }
+    .nav-links li a {
+        padding: 12px 5%; /* Padding untuk item menu yang lebih besar */
+        display: block;
+        width: 100%;
+        color: var(--text-dark); /* Ubah warna agar lebih menonjol */
+    }
+    /* Sembunyikan tombol utama dari header di mobile */
+    header .btn-primary {
+        display: none;
+    }
     .menu-toggle { display: block; }
     .grid-2 { grid-template-columns: 1fr; }
 }
